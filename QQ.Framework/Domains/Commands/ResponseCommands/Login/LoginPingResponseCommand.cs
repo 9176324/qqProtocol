@@ -16,7 +16,7 @@ namespace QQ.Framework.Domains.Commands.ResponseCommands.Login
         {
             if (_packet.Result == 0xFE)
             {
-                _service.MessageLog($"服务器{_user.TXProtocol.DwRedirectIP}重定向");
+                _service.MessageLog($"服务器{_user.TXProtocol.DwRedirectIP}重定向",MsgType.WARN);
                 //如果是登陆重定向，继续登陆
                 _user.IsLoginRedirect = true;
                 //刷新重定向后服务器IP
@@ -29,7 +29,7 @@ namespace QQ.Framework.Domains.Commands.ResponseCommands.Login
             }
             else
             {
-                _service.MessageLog($"连接服务器{_user.TXProtocol.DwServerIP}成功");
+                _service.MessageLog($"连接服务器{_user.TXProtocol.DwServerIP}成功",MsgType.INFO);
                 //Ping请求成功后发送0836登录包
                 _service.Send(new Send_0X0836(_user, Login0X0836Type.Login0X0836622));
             }

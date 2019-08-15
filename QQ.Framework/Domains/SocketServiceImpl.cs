@@ -65,30 +65,33 @@ namespace QQ.Framework.Domains
             _point = new IPEndPoint(IPAddress.Parse(_host), _port);
         }
 
-        public void MessageLog(string content)
+        public virtual void MessageLog(string content,MsgType type)
         {
-            Console.WriteLine($"{DateTime.Now.ToString()}--{content}");
+            if (_user.LoggerHandler != null)
+                _user.LoggerHandler.MessageLog(content, _user.QQ, type);
+            else
+                Console.WriteLine($"{DateTime.Now.ToString()}--{content}");
         }
 
         public void Login()
         {
             Send(new Send_0X0825(_user, false));
-            MessageLog($"登录服务器{_host}");
+            MessageLog($"登录服务器{_host}",MsgType.INFO);
         }
 
-        public void LoginCallback(bool isSuccess, string message) {
+        public virtual void LoginCallback(bool isSuccess, string message) {
             if(isSuccess) {
-        	MessageLog($"登录成功: {message}");
+        	MessageLog($"登录成功: {message}", MsgType.INFO);
             } else {
-        	MessageLog($"登录失败: {message}");
+        	MessageLog($"登录失败: {message}",MsgType.WARN);
             }
         }
 
-        public void ReceiveVerifyCode(byte[] data)
+        public virtual void ReceiveVerifyCode(byte[] data)
         {
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "yanzhengma");
             var img = ImageHelper.CreateImageFromBytes(path, data);
-            Console.Write($"请输入验证码({img}):");
+            Console.Write($"请输入验证码({img}):",MsgType.INFO);
             var code = Console.ReadLine();
             if (!string.IsNullOrEmpty(code))
             {

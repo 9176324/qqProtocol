@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using QQ.Framework.Events;
 using QQ.Framework.HttpEntity;
 using QQ.Framework.Packets.Receive.Message;
 using QQ.Framework.Packets.Send.Message;
@@ -24,7 +25,14 @@ namespace QQ.Framework
             SetPassword(pwd);
             Initialize();
         }
-
+        public QQUser(long qqNum,byte[] pwd_md5)
+        {
+            QQ = qqNum;
+            this.MD51 = pwd_md5;
+            Initialize();
+        }
+        public LoggerHandler LoggerHandler { get; set; }
+        public InfoHandler InfoHandler { get; set; }
         /// <summary>
         ///     经过重定向登录
         /// </summary>
@@ -143,9 +151,14 @@ namespace QQ.Framework
         ///     日志记录
         /// </summary>
         /// <param name="str"></param>
-        public void MessageLog(string str)
+        public virtual void MessageLog(string str,MsgType type)
         {
-            Console.WriteLine($"{DateTime.Now.ToString()}--{str}");
+            if (LoggerHandler != null)
+                LoggerHandler.MessageLog(str, this.QQ, type);
+            else
+            {
+                Console.WriteLine($"{DateTime.Now.ToString()}--{str}");
+            }
         }
 
         public bool GetCookies()
@@ -177,7 +190,7 @@ namespace QQ.Framework
             }
             catch (Exception ex)
             {
-                MessageLog("获取skey失败:" + ex.Message);
+                MessageLog("获取skey失败:" + ex.Message,MsgType.ERROR);
             }
 
             return false;
@@ -215,7 +228,7 @@ namespace QQ.Framework
             }
             catch (Exception ex)
             {
-                MessageLog("获取skey失败:" + ex.Message);
+                MessageLog("获取skey失败:" + ex.Message,MsgType.ERROR);
             }
 
             return false;
@@ -257,16 +270,23 @@ namespace QQ.Framework
                             .Replace("},\"max_count\"", "],\"max_count\"");
                     }
 
-                    MessageLog($"获取群{externalId}成员列表成功:{(text.Length > 200 ? text.Substring(0, 200) : text)}");
+                    MessageLog($"获取群{externalId}成员列表成功:{(text.Length > 200 ? text.Substring(0, 200) : text)}",MsgType.INFO);
                     return JsonConvert.DeserializeObject<GroupMembers>(text);
                 }
             }
             catch (Exception ex)
             {
-                MessageLog($"获取群{externalId}成员列表失败:{ex.Message}");
+                MessageLog($"获取群{externalId}成员列表失败:{ex.Message}",MsgType.ERROR);
             }
 
             return null;
+        }
+        public void GetFriendAndGroup()
+        {
+            this.GetQunCookies();
+            this.Friends = this.Get_Friend_List();
+            this.Groups = this.Get_Group_List();
+            InfoHandler.GetFriendAndGroup(this.QQ,this.Friends, this.Groups);
         }
 
         public GroupList Get_Group_List()
@@ -286,7 +306,7 @@ namespace QQ.Framework
                     var text = Encoding.UTF8.GetString(httpWebClient.UploadData(address, "POST",
                         Encoding.UTF8.GetBytes(s)));
 
-                    MessageLog("获取群列表成功:" + text);
+                    MessageLog("获取群列表成功:" + text, MsgType.INFO);
 
                     var groups = JsonConvert.DeserializeObject<GroupList>(text);
                     if (groups.Create != null)
@@ -318,7 +338,7 @@ namespace QQ.Framework
             }
             catch (Exception ex)
             {
-                MessageLog("获取群列表失败:" + ex.Message);
+                MessageLog("获取群列表失败:" + ex.Message, MsgType.ERROR);
             }
 
             return null;
@@ -349,16 +369,16 @@ namespace QQ.Framework
                             text = text.Replace(str, "");
                         }
 
-                        text = text.Replace("\"result\":{{", "\"result\":[{").Replace("\"}}}", "\"}]}");
+                        text = text.Replace("\"result\":{{", "\"result\":[{").Replace("}}}", "}]}");
                     }
 
-                    MessageLog("获取好友列表成功:" + text);
+                    MessageLog("获取好友列表成功:" + text, MsgType.INFO);
                     return JsonConvert.DeserializeObject<FriendList>(text);
                 }
             }
             catch (Exception ex)
             {
-                MessageLog("获取好友列表失败:" + ex.Message);
+                MessageLog("获取好友列表失败:" + ex.Message, MsgType.ERROR);
             }
 
             return null;
@@ -394,10 +414,8 @@ namespace QQ.Framework
         ///     好友列表
         /// </summary>
         public FriendList Friends { get; set; }
-
         //群列表
         public GroupList Groups { get; set; }
-
         #endregion
 
         /// <summary>
@@ -419,5 +437,11 @@ namespace QQ.Framework
         ///     群接收消息合集
         /// </summary>
         public List<Receive_0X0017> GroupReceiveMessages { get; set; } = new List<Receive_0X0017>();
+    }
+    public enum MsgType
+    {
+        INFO,
+        WARN,
+        ERROR
     }
 }

@@ -28,7 +28,7 @@ namespace QQ.Framework.Domains
         ///     记录日志
         /// </summary>
         /// <param name="content">内容</param>
-        void MessageLog(string content);
+        void MessageLog(string content,MsgType type);
 
         /// <summary>
         ///     登录

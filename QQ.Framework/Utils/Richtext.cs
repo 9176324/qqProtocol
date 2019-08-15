@@ -23,6 +23,7 @@ namespace QQ.Framework.Utils
                 while (pos + dataLength < reader.BaseStream.Length)
                 {
                     reader.ReadByte();
+
                     switch (messageType)
                     {
                         case 0x01: // 纯文本消息、@

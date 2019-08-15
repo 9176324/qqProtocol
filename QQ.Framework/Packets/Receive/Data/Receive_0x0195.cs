@@ -39,7 +39,7 @@ namespace QQ.Framework.Packets.Receive.Data
                 var indnex = itemReader.ReadByte();
                 var cateName = Util.GetString(itemReader.ReadBytes(itemReader.ReadByte()));
                 GroupCategory.Add(cateName);
-                User.MessageLog($"群分组{indnex}：{cateName}");
+                User.MessageLog($"群分组{indnex}：{cateName}",MsgType.INFO);
 
                 itemLength = Reader.BeReadUInt16();
             }

@@ -40,7 +40,7 @@ namespace QQ.Framework.Packets
             }
             catch (Exception e)
             {
-                User.MessageLog($"包内容解析出错,错误{e.Message}，包名: {ToString()}");
+                User.MessageLog($"包内容解析出错,错误{e.Message}，包名: {ToString()}",MsgType.ERROR);
             }
 
             //提取包尾部分

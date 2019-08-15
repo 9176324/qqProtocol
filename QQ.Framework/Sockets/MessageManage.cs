@@ -25,7 +25,7 @@ namespace QQ.Framework.Sockets
         ///     消息转发器
         /// </summary>
         private readonly IServerMessageSubject _transponder;
-
+        private bool serverstop=false;
         public MessageManage(ISocketService service, QQUser user, IServerMessageSubject transponder)
         {
             _service = service;
@@ -42,7 +42,7 @@ namespace QQ.Framework.Sockets
 
         private void Receive(object state)
         {
-            while (true)
+            while (!serverstop)
             {
                 var result = _service.Receive();
 
@@ -56,7 +56,7 @@ namespace QQ.Framework.Sockets
                 var receiveEvent = new QQEventArgs<ReceivePacket>(_service, _user, receivePacket);
                 if (QQGlobal.DebugLog)
                 {
-                    _service.MessageLog($"接收数据:{Util.ToHex(receiveEvent.ReceivePacket.Buffer)}");
+                    _service.MessageLog($"接收数据:{Util.ToHex(receiveEvent.ReceivePacket.Buffer)}",MsgType.INFO);
                 }
 
                 // 通过Command, 利用反射+Attribute, 分发到管理具体某个包的Command中,最后直接调用Receive方法即可。
@@ -65,6 +65,12 @@ namespace QQ.Framework.Sockets
                     .dispatch_receive_packet(receivePacket.Command);
                 receiveCommand.Process();
             }
+        }
+        public void Dispose()
+        {
+            if (serverstop)
+                return;
+            serverstop = true; 
         }
     }
 }

@@ -14,7 +14,7 @@ namespace QQ.Framework.Domains.Commands.ResponseCommands.Login
 
         public override void Process()
         {
-            _service.MessageLog("获取SessionKey");
+            //获取SessionKey
             //登录成功改变在线状态
             _service.Send(new Send_0X00Ec(_user, LoginStatus.我在线上));
 

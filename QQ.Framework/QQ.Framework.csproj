@@ -89,6 +89,8 @@
     <Compile Include="Domains\SocketService.cs" />
     <Compile Include="Domains\SocketServiceImpl.cs" />
     <Compile Include="Domains\Transponder.cs" />
+    <Compile Include="Events\InfoHandler.cs" />
+    <Compile Include="Events\LoggerHandler.cs" />
     <Compile Include="Events\QQEventArgs.cs" />
     <Compile Include="Packets\HttpEntity\FriendList.cs" />
     <Compile Include="Packets\HttpEntity\GroupList.cs" />
@@ -249,7 +251,7 @@
       <Version>1.9.1.5</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>11.0.2</Version>
+      <Version>12.0.2</Version>
     </PackageReference>
     <PackageReference Include="System.ValueTuple">
       <Version>4.5.0</Version>

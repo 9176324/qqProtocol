@@ -16,7 +16,7 @@ namespace QQ.Framework.Packets.Receive.Interactive
             Decrypt(User.TXProtocol.SessionKey);
             if (GetPacketLength() == 159)
             {
-                User.MessageLog("抱歉，由于你操作过于频繁或账户存在不安全因素，添加好友功能暂被停止使用，请稍后再试");
+                User.MessageLog("抱歉，由于你操作过于频繁或账户存在不安全因素，添加好友功能暂被停止使用，请稍后再试",MsgType.WARN);
             }
         }
     }

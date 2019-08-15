@@ -35,10 +35,10 @@ namespace QQ.Framework.Domains.Commands.ResponseCommands.Message
                     {
                         if (!QQGlobal.DebugLog && _packet.Message.ToString().Count(c => c == '\0') > 5)
                         {
-                            _service.MessageLog($"收到群{_packet.Group}的{_packet.FromQQ}的乱码消息。");
+                            _service.MessageLog($"收到群{_packet.Group}的{_packet.FromQQ}的乱码消息。", MsgType.INFO);
                         }
 
-                        _service.MessageLog($"收到群{_packet.Group}的{_packet.FromQQ}的消息:{_packet.Message}");
+                        _service.MessageLog($"收到群{_packet.Group}的{_packet.FromQQ}的消息:{_packet.Message}", MsgType.INFO);
                         
                         //添加到已处理消息列表
                         _user.GroupReceiveMessages.Add(_packet);

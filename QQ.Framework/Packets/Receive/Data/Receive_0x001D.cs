@@ -26,10 +26,9 @@ namespace QQ.Framework.Packets.Receive.Data
 
             new Task(() =>
             {
-                User.GetQunCookies();
-                User.Friends = User.Get_Friend_List();
-                User.Groups = User.Get_Group_List();
+                User.GetFriendAndGroup();
             }).Start();
+            
             //User.QQCookies = "uin=o" + User.QQ + ";skey=" + User.QQSkey + ";";
             //User.QQGtk = Util.GET_GTK(User.QQSkey);
         }
